@@ -63,45 +63,34 @@ namespace CapaPresentacionTienda.Controllers
 
 
         [HttpPost]
-        public JsonResult ListarProducto(int idCategoria, int idMarca, int page = 1, int pageSize = 15)
+        public JsonResult ListarProducto(int idCategoria, int idMarca)
         {
+            List<Producto> lista = new List<Producto>();
             bool conversion;
 
-            var productos = new CNProducto().Listar()
-                .Where(p =>
-                    p.categoria.IdCategoria == (idCategoria == 0 ? p.categoria.IdCategoria : idCategoria) &&
-                    p.marca.IdMarca == (idMarca == 0 ? p.marca.IdMarca : idMarca) &&
-                    p.Stock > 0 && p.Activo == true
-                )
-                .Select(p => new
-                {
-                    IdProducto = p.IdProducto,
-                    Nombre = p.Nombre,
-                    Descripcion = p.Descripcion,
-                    Marca = p.marca,
-                    Categoria = p.categoria,
-                    Precio = p.Precio,
-                    Stock = p.Stock,
-                    RutaImagen = p.RutaImagen,
-                    Base64 = CNRecursos.ConversionBase64(Path.Combine(p.RutaImagen, p.NombreImagen), out conversion),
-                    Extension = Path.GetExtension(p.NombreImagen),
-                    Activo = p.Activo
-                })
-                .ToList();
-
-            int totalItems = productos.Count();
-            var productosPaginados = productos.Skip((page - 1) * pageSize).Take(pageSize).ToList();
-
-            var result = new
+            lista = new CNProducto().Listar().Select(p => new Producto()
             {
-                data = productosPaginados,
-                page = page,
-                pageSize = pageSize,
-                totalPages = (int)Math.Ceiling((double)totalItems / pageSize),
-                totalItems = totalItems
-            };
+                IdProducto = p.IdProducto,
+                Nombre = p.Nombre,
+                Descripcion = p.Descripcion,
+                marca = p.marca,
+                categoria = p.categoria,
+                Precio = p.Precio,
+                Stock = p.Stock,
+                RutaImagen = p.RutaImagen,
+                Base64 = CNRecursos.ConversionBase64(Path.Combine(p.RutaImagen, p.NombreImagen), out conversion),
+                Extension = Path.GetExtension(p.NombreImagen),
+                Activo = p.Activo
+            }).Where(p =>
+            p.categoria.IdCategoria == (idCategoria == 0 ? p.categoria.IdCategoria : idCategoria) &&
+            p.marca.IdMarca == (idMarca == 0 ? p.marca.IdMarca : idMarca) &&
+            p.Stock > 0 && p.Activo == true
+            ).ToList();
 
-            return Json(result, JsonRequestBehavior.AllowGet);
+            var jsonresult = Json(new { data = lista }, JsonRequestBehavior.AllowGet);
+            jsonresult.MaxJsonLength = int.MaxValue;
+
+            return jsonresult;
         }
         #endregion
 
