@@ -1,0 +1,186 @@
+﻿@{
+    int year = DateTime.Now.Year;
+}
+@*este es el de tienda*@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bonfire & Undead Trading</title>
+    <link rel="shortcut icon" href="~/favicon.ico" type="image/x-icon">
+    @Styles.Render("~/Content/css")
+    @*@Scripts.Render("~/bundles/modernizr")*@
+    <style>
+        .img-thumbnail {
+            height: 32px;
+            width: 32px;
+        }
+        .stripe-input {
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem; 
+            padding: 0.375rem 0.75rem; 
+            font-size: 1rem; 
+            box-shadow: none; 
+            background-color: #fff; 
+        }
+
+        #card-element {
+            border: 1px solid #ced4da; 
+            border-radius: 0.25rem; 
+            padding: 0.375rem 0.75rem;
+            font-size: 1rem; 
+            background-color: #fff; 
+            color: #495057; 
+        }
+
+        #card-errors {
+            color: #dc3545;
+        }
+        .logo {
+            border-radius: 20px;
+            height: 200px;
+            width: 200px;
+        }
+
+        #til {
+            font-size: 60px;
+        }
+        #cardss {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            max-height: 400px;
+        }
+
+        #card-bodysss {
+            flex-grow: 1;
+        }
+
+        #card-footerss {
+            margin-top: auto;
+        }
+
+        #text-centersss {
+            font-size: 1rem;
+        }
+
+        #h5s {
+            font-size: 0.8rem;
+        }
+
+        #img-peque {
+            margin-top: 6px;
+            height: 150px;
+            object-fit: contain;
+        }
+
+        #img-peque:hover {
+            padding: 10px;
+        }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+    <!-- Navigation-->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark bg-gradient fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand ps-2" href="#">Bonfire & Undead Trading <img src="~/favicon.ico" class="img-thumbnail"></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="@Url.Action("Index", "Tienda")">Inicio</a></li>
+                    @*<li class="nav-item"><a class="nav-link" href="#!">About</a></li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Shop</a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="#!">All Products</a></li>
+                                <li><hr class="dropdown-divider" /></li>
+                                <li><a class="dropdown-item" href="#!">Popular Items</a></li>
+                                <li><a class="dropdown-item" href="#!">New Arrivals</a></li>
+                            </ul>
+                        </li>*@
+                </ul>
+                <form class="d-flex">
+                    @if (Session["Cliente"] == null)
+                    {
+                        <a class="btn btn-outline-primary" aria-current="page" href="@Url.Action("Index", "Acceso")"><i class="fas fa-sign-out-alt me-1"></i>Iniciar Sesión</a>
+                    }
+                    else
+                    {
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                            <li class="me-lg-2" id="carrgaa">
+                                <a class="btn btn-outline-primary" href="@Url.Action("Carrito", "Tienda")">
+                                    <i class="fas fa-shopping-cart me-1"></i>
+                                    Carrito
+                                    <span class="badge bg-dark text-white ms-1 rounded-pill" id="cantCarrito">0</span>
+                                </a>
+                            </li>
+                            <li>
+                                <ul class="navbar-nav ms-auto me-0 me-md-3 my-2 my-md-0">
+                                    <li class="nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i> @Session["Usuario"] </a>
+                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                            <li><a class="dropdown-item" href="#!"><b>@User.Identity.Name</b></a></li>
+                                            <li><a class="dropdown-item" href="@Url.Action("MisCompras", "Tienda")">Mis compras</a></li>
+                                            <li><hr class="dropdown-divider" /></li>
+                                            <li><a class="dropdown-item" href="@Url.Action("CerrarSesion", "Acceso")">Cerrar sesión</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    }
+
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    @RenderBody()
+
+    <footer class="py-4 bg-dark bg-gradient mt-auto">
+        <div class="container-fluid px-4">
+            <div class="d-flex align-items-center justify-content-center small">
+                <div class="text-light">Copyright &copy; Bonfire & Undead Trading @year</div>
+            </div>
+        </div>
+    </footer>
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/complementos")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+
+<script>
+
+    $(document).ready(function () {
+        MostrarCantidadCarrito();
+    });
+
+        function MostrarCantidadCarrito() {
+            if ($("#cantCarrito").length > 0) {
+
+                jQuery.ajax({
+                    url: '@Url.Action("CantidadEnCarrito", "Tienda")',
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function (data) {
+                        $("#carrgaa").LoadingOverlay("hide");
+
+                        $("#cantCarrito").text(data.cantidad)
+
+                    },
+                    beforeSend: function () {
+                        $("#carrgaa").LoadingOverlay("show");
+                    }
+                });
+
+            }
+        }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,288 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Header-->
+<header class="bg-dark py-5">
+    <div class="container px-4 px-lg-5 my-5 mb-0">
+        <div class="text-center text-white">
+            <h1 class="display-4 fw-bolder" id="til"><img src="~/logo.png" class="logo"><hr />Bonfire & Undead Trading</h1>
+            <p class="lead fw-normal text-white-50 mb-0">Preparado para morir, equipado para ganar.</p>
+        </div>
+    </div>
+</header>
+
+<!-- Section-->
+<section>
+    <div class="container-fluid px-5 my-5">
+
+        <div class="row">
+            <div class="col-sm-3">
+
+                <div class="row mb-3">
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-header bg-dark text-light">
+                                Categorias
+                            </div>
+                            <div id="contenCate" class="card-body overflow-hidden">
+
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-header bg-dark text-light">
+                                Marcas
+                            </div>
+                            <div id="contenMarca" class="card-body overflow-hidden">
+
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-sm-12">
+                        <div class="d-grid gap-2">
+                            <button id="apliFiltro" class="btn btn-outline-primary btn-block" type="button">
+                                <i class="fas fa-filter"></i>Aplicar filtros
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-9">
+
+                <div id="contenProdu" class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-2 row-cols-lg-3 justify-content-center">
+
+
+                </div>
+                <nav aria-label="Page navigation example">
+                    <ul id="paginationContainer" class="pagination d-flex justify-content-center mt-4">
+                        <!-- paginacion -->
+                    </ul>
+                </nav>
+
+            </div>
+
+        </div>
+    </div>
+</section>
+@section scripts{
+    <script>
+
+        $(document).ready(function () {
+            Mostrarcategorias();
+            MostrarProductos(0, 0, 1);
+        });
+
+        function Mostrarcategorias() {
+            jQuery.ajax({
+                url: '@Url.Action("ListarCategorias", "Tienda")',
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+
+                    $("#contenCate").LoadingOverlay("hide");
+
+                    $("<div>").addClass("form-check").append(
+                        $("<input>").addClass("form-check-input").attr({ "type": "radio", "name": "categoria", "value": "0", "id": "cx", "checked": "checked" }),
+                        $("<label>").addClass("form-check-label").text("Todos").attr({ "for": "cx" })
+                    ).appendTo("#contenCate");
+
+                    $.each(response.data, function (i, element) {
+                        $("<div>").addClass("form-check").append(
+                            $("<input>").addClass("form-check-input").attr({ "type": "radio", "name": "categoria", "value": element.IdCategoria, "id": "c" + i }),
+                            $("<label>").addClass("form-check-label").text(element.Descripcion).attr({ "for": "c" + i })
+                        ).appendTo("#contenCate")
+                    });
+
+                    Mostrarmarcas();
+
+                },
+                beforeSend: function () {
+                    $("#contenCate").LoadingOverlay("show");
+                }
+            });
+        }
+
+        function Mostrarmarcas() {
+
+            var _idCategoria = $("input[name=categoria]:checked").val();
+
+            jQuery.ajax({
+                url: '@Url.Action("ListarMarcaxCategoria", "Tienda")',
+                type: "POST",
+                data: JSON.stringify({ idCategoria: _idCategoria }),
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+
+                    $("#contenMarca").html("");
+                    $("#contenMarca").LoadingOverlay("hide");
+
+                    $("<div>").addClass("form-check").append(
+                        $("<input>").addClass("form-check-input").attr({ "type": "radio", "name": "marca", "value": "0", "id": "mx", "checked": "checked" }),
+                        $("<label>").addClass("form-check-label").text("Todos").attr({ "for": "mx" })
+                    ).appendTo("#contenMarca");
+
+                    $.each(response.data, function (i, element) {
+                        $("<div>").addClass("form-check").append(
+                            $("<input>").addClass("form-check-input").attr({ "type": "radio", "name": "marca", "value": element.IdMarca, "id": "m" + i }),
+                            $("<label>").addClass("form-check-label").text(element.Descripcion).attr({ "for": "m" + i })
+                        ).appendTo("#contenMarca")
+                    });
+
+
+                },
+                beforeSend: function () {
+                    $("#contenMarca").LoadingOverlay("show");
+                }
+            });
+        }
+
+        $(document).on("change", "input[name=categoria]", function () {
+            Mostrarmarcas();
+        })
+
+
+        function MostrarProductos(_idCategoria, _idMarca, pagina) {
+    jQuery.ajax({
+        url: '@Url.Action("ListarProducto", "Tienda")',
+        type: "POST",
+        data: JSON.stringify({ idCategoria: _idCategoria, idMarca: _idMarca, page: pagina }),
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
+        success: function (response) {
+            $("#contenProdu").html("");
+            $("#contenProdu").LoadingOverlay("hide");
+
+            if (response.data && response.data.length > 0) {
+                $.each(response.data, function (i, element) {
+                    $("<div>").addClass("col mb-5").append(
+                        $("<div>").addClass("card h-100").attr({ "id": "cardss" }).append(
+                            $("<img>").addClass("card-img-top").attr({ "src": "data:image/" + element.Extension + ";base64," + element.Base64, "id": "img-peque" }),
+                            $("<div>").addClass("card-body p-4").attr({ "id": "card-bodysss" }).append(
+                                $("<div>").addClass("text-center").attr({ "id": "text-centersss" }).append(
+                                    $("<h5>").addClass("fw-bolder").attr({ "id": "h5s" }).text(element.Nombre),
+                                    "USD$ " + element.Precio.toFixed(2)
+                                )
+                            ),
+                            $("<div>").addClass("card-footer p-2 pt-0 border-top-0 bg-transparent").append(
+                                $("<div>").addClass("d-grid gap-2").append(
+                                    @{
+                                        if(Session["Cliente"] != null)
+                                        {
+                                            @:$("<button>").addClass("btn btn-outline-primary mt-auto agregarcarrito").data("idProducto", element.IdProducto).text("Añadir al carrito"),
+                                        }
+                                    }
+                                    $("<a>").addClass("btn btn-outline-dark mt-auto").attr({ "href": "@Url.Action("DetalleProducto", "Tienda")" + "?idProducto=" + element.IdProducto }).text("Ver detalles")
+                                )
+                            )
+                        )
+                    ).appendTo("#contenProdu");
+                });
+                RenderPagination(response.page, response.totalPages);
+            } else {
+                // Si no hay productos, muestra un mensaje
+                $("#contenProdu").append("<p>No se encontraron productos para los filtros seleccionados.</p>");
+            }
+        },
+        error: function (xhr, status, error) {
+            $("#contenProdu").LoadingOverlay("hide");
+            console.error("Error al listar productos:", error);
+
+        },
+        beforeSend: function () {
+            $("#contenProdu").LoadingOverlay("show");
+        }
+    });
+}
+
+
+
+        $("#apliFiltro").click(function () {
+            var _idCategoria = $("input[name=categoria]:checked").val();
+            var _idMarca = $("input[name=marca]:checked").val();
+
+            MostrarProductos(_idCategoria, _idMarca, 1);
+        })
+
+        $(document).on("click", "button.agregarcarrito", function () {
+            //console.log($(this).data("idProducto"))
+
+            jQuery.ajax({
+                url: '@Url.Action("AgregarCarrito", "Tienda")',
+                type: "POST",
+                data: JSON.stringify({ idProducto: $(this).data("idProducto") }),
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    $("#carrgaa").LoadingOverlay("hide");
+
+                    if (data.respuesta) {
+                        MostrarCantidadCarrito();
+                        swal({
+                            title: "Añadido al carrito",
+                            text: "¿Desea ir al carrito?",
+                            type: "success",
+                            showCancelButton: true,
+                            confirmButtonClass: "btn-outline-primary",
+                            confirmButtonText: "Si",
+                            cancelButtonClass: "btn-outline-dark",
+                            cancelButtonText: "No",
+                            closeOnConfirm: true
+                        }, function () {
+                            window.location.href = '@Url.Action("Carrito", "Tienda")'
+                        })
+                    } else {
+                        swal({
+                            title:"",
+                            text: data.mensaje,
+                            type: "warning",
+                            confirmButtonClass: "btn-outline-dark",
+                            confirmButtonText: "Ok"
+                        })
+                    }
+                },
+                beforeSend: function () {
+                    $("#carrgaa").LoadingOverlay("show");
+                }
+            });
+        });
+
+        function RenderPagination(currentPage, totalPages) {
+            var paginationContainer = $("#paginationContainer");
+            paginationContainer.empty();
+
+            for (var i = 1; i <= totalPages; i++) {
+                var pageItem = $("<li>").addClass("page-item").addClass(i === currentPage ? "active" : "").append(
+                    $("<a>").addClass("page-link").attr("href", "#").text(i).data("page", i)
+                );
+
+                paginationContainer.append(pageItem);
+            }
+        }
+
+
+        $(document).on("click", ".page-link", function (e) {
+            e.preventDefault();
+            var page = $(this).data("page");
+            var _idCategoria = $("input[name=categoria]:checked").val();
+            var _idMarca = $("input[name=marca]:checked").val();
+            MostrarProductos(_idCategoria, _idMarca, page);
+        });
+
+    </script>
+}

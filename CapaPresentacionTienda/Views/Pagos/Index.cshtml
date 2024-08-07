@@ -1,0 +1,62 @@
+﻿@model dynamic
+@{
+    ViewBag.Title = "Pagos";
+}
+
+<div class="my-3"></div>
+
+<div class="row">
+    <div class="col-sm-12 text-center">
+        <br />
+        <br />
+        <h2>Tipos de Pago</h2>
+
+        <form id="payment-form">
+            <div id="card-element">
+
+                <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+                        data-key="@ViewBag.StripePublishableKey"
+                        data-amount="@TempData["Total"]"
+                        data-name="Bonfire & Undead Trading"
+                        data-description="Pago de productos en carrito"
+                        data-image="../../logo.png"
+                        data-locale="auto"
+                        data-email="@TempData["Correo"]">
+                </script>
+
+            </div>
+            <button id="submit">Pagar</button>
+        </form>
+
+        <div id="payment-result"></div>
+    </div>
+</div>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    var stripe = Stripe('@ViewBag.StripePublishableKey');
+    var elements = stripe.elements();
+    var card = elements.create('card');
+    card.mount('#card-element');
+
+    var form = document.getElementById('payment-form');
+    form.addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        const { paymentIntent, error } = await stripe.confirmCardPayment('@ViewBag.ClientSecret', {
+            payment_method: {
+                card: card,
+                billing_details: {
+                    name: 'Nombre del cliente'
+                }
+            }
+        });
+
+        if (error) {
+            document.getElementById('payment-result').textContent = error.message;
+        } else if (paymentIntent.status === 'succeeded') {
+            document.getElementById('payment-result').textContent = 'Pago exitoso!';
+            window.location.href = '@Url.Action("PagoRealizado", "Tienda")' + '?payment_intent=' + paymentIntent.id;
+        }
+    });
+</script>

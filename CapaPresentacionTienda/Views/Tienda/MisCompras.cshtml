@@ -1,0 +1,92 @@
+﻿@model List<CapaEntidad.DetalleVenta>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="my-3"></div>
+
+<div class="container">
+    <div class="row mt-5">
+
+        <div class="col-sm-12">
+
+            @{
+                if (Model.Count > 0)
+                {
+                    foreach (var item in Model)
+                    {
+                        <div class="row mb-3">
+
+                            <div class="col-sm-12">
+
+                                <div class="card">
+                                    <div class="card-body bg-light shadow-lg">
+                                        <h6>ID Transacción: @item.IdTransaccion</h6>
+                                        <div class="table table-responsive">
+                                            <table class="table table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th valign="middle" class="text-center">Imagen</th>
+                                                        <th valign="middle" class="text-center">Producto</th>
+                                                        <th valign="middle" class="text-center">Precio unitario</th>
+                                                        <th valign="middle" class="text-center">Cantidad</th>
+                                                        <th valign="middle" class="text-center">Sub total</th>
+                                                    </tr>
+
+                                                </thead>
+
+                                                <tbody>
+                                                    <tr>
+                                                        <td valign="middle" class="text-center">
+                                                            <img class="card-img-top mb-5 mb-md-0" src="data:image/@item.producto.Extension;base64,@item.producto.Base64" style="width:120px; height:120px; object-fit:contain;" />
+                                                        </td>
+                                                        <td valign="middle">
+                                                            @item.producto.Nombre
+                                                        </td>
+                                                        <td valign="middle" class="text-center">
+                                                            USD$ @item.producto.Precio
+                                                        </td>
+                                                        <td valign="middle" class="text-center">
+                                                            @item.Cantidad
+                                                        </td>
+                                                        <td valign="middle" class="text-center">
+                                                            USD$ @item.Total
+                                                        </td>
+
+                                                    </tr>
+
+                                                </tbody>
+
+
+                                            </table>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="row mb-3">
+
+                        <div class="col-sm-12 text-center">
+                            <h1>Tu inventario está vacío. Aún no has encontrado ninguna compra en tu travesía.</h1>
+                        </div>
+
+                    </div>
+
+                }
+            }
+
+
+
+        </div>
+
+    </div>
+</div>

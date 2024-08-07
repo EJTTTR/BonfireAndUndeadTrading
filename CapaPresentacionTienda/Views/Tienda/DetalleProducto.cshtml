@@ -1,0 +1,81 @@
+﻿@model CapaEntidad.Producto
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Product section-->
+<section class="py-5">
+    <div class="container px-4 px-lg-5 my-5">
+        <div class="row gx-4 gx-lg-5 align-items-center">
+            <div class="col-md-6"><img class="card-img-top mb-5 mb-md-0" src="data:image/@Html.DisplayTextFor(m => m.Extension);base64,@Html.DisplayTextFor(m => m.Base64)" alt="@Html.DisplayTextFor(m => m.Nombre)" /></div>
+            <div class="col-md-6">
+                <div class="small mb-1">Marca: @Html.DisplayTextFor(m => m.marca.Descripcion)</div>
+                <h1 class="display-5 fw-bolder">@Html.DisplayTextFor(m => m.Nombre)</h1>
+                <div class="fs-5 mb-5">
+                    <span>USD$ @Html.DisplayTextFor(m => m.Precio)</span>
+                </div>
+                <p class="lead">@Html.DisplayTextFor(m => m.Descripcion)</p>
+                <div class="d-flex">
+
+                    <a href="@Url.Action("Index", "Tienda")" class="btn btn-outline-dark w-50 text-center me-3"><i class="fas fa-undo-alt"></i> Volver</a>
+
+            @{
+                if (Session["Cliente"] != null)
+                {
+                    <button class="btn btn-outline-primary agregarcarrito flex-shrink-0 w-50" type="button" data-idProducto="@Html.DisplayTextFor(m => m.IdProducto)">
+                        <i class="fas fa-shopping-cart me-1"></i> Añadir al carrito
+                    </button>
+                }
+            }
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section scripts{
+
+    <script>
+
+        $(document).on("click", "button.agregarcarrito", function () {
+            //console.log($(this).data("idProducto"))
+            var _idProducto = @Html.DisplayTextFor(m => m.IdProducto)
+
+            jQuery.ajax({
+                url: '@Url.Action("AgregarCarrito", "Tienda")',
+                type: "POST",
+                data: JSON.stringify({ idProducto: _idProducto }),
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    $("#carrgaa").LoadingOverlay("hide");
+
+                    if (data.respuesta) {
+                        MostrarCantidadCarrito();
+                        swal({
+                            title: "",
+                            text: "Añadido al carrito",
+                            type: "success",
+                            confirmButtonClass: "btn-outline-primary",
+                            confirmButtonText: "ok"
+                        })
+                    } else {
+                        swal({
+                            title:"",
+                            text: data.mensaje,
+                            type: "warning",
+                            confirmButtonClass: "btn-outline-dark",
+                            confirmButtonText: "Ok"
+                        })
+                    }
+                },
+                beforeSend: function () {
+                    $("#carrgaa").LoadingOverlay("show");
+                }
+            });
+        });
+
+    </script>
+    
+}
