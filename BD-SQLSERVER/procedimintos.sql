@@ -473,6 +473,8 @@ Create TYPE [dbo].[EDetalles_Venta] as table (
 
 go
 
+
+
 create procedure usp_RegistrarVenta(
 @IdCliente int, 
 @TotalProducto int,

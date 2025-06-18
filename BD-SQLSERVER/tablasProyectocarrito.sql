@@ -283,7 +283,7 @@ CREATE TABLE [dbo].[VENTA](
 	[TotalProducto] [int] NULL,
 	[MontoTotal] [decimal](10, 2) NULL,
 	[Contacto] [varchar](50) NULL,
-	[IdProvincia] [varchar](20) NULL,
+	[IdDistrito] [varchar](20) NULL,
 	[Telefono] [varchar](50) NULL,
 	[Direccion] [varchar](100) NULL,
 	[IdTransaccion] [varchar](50) NULL,
